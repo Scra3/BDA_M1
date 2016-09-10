@@ -31,3 +31,32 @@ WHERE C1.NumCl = O1.NumCl
   AND C1.NumCl > C2.NumCl
   AND (O1.DateA,O2.DateD) OVERLAPS (O2.DateA,O2.DateD);
   
+/*Question 6*/
+SELECT COUNT(C.NumHo),C.NumHo
+FROM CHAMBRE C
+WHERE C.NumTy
+GROUP BY C.NumHo;
+
+/*Question 7 Chambre luxe Le sud */
+
+SELECT T.NomTy,COUNT(T.NomTy)
+FROM TYPESCHAMBRES T, HOTELS H, OCCUPATIONS O
+WHERE T.NumTy = O.NumTy
+  AND H.NumHo = O.NumHo
+  AND T.NomTy = 'Luxe'
+  AND H.NomHo = 'Le sud';
+  
+/*Question 8*/
+SELECT COUNT(T.NumTy),T.NomTy,H.NomHo
+FROM TYPESCHAMBRE T, HOTELS H,CHAMBRE C
+WHERE T.NumTy = C.NumTy
+  AND H.NumHo = C.NumHo
+GROUP BY T.NomTy,H.NomHo;
+
+/*Question 9*/
+SELECT C.NomCL,
+FROM CLIENTS C,OCCUPATIONS O
+WHERE C.NumCl = O.NumCl
+  /*CONDITION QUE LE CLIENT EST UNIQUEMENT OCCUPE DU 4 ETOILES*/
+  CASE
+
