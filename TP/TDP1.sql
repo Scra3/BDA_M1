@@ -115,6 +115,13 @@ CREATE TABLE CLIENTS(
   VilleCL VARCHAR(15)
 );
 
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('1','MAQUIN','Malorie','Rue pierre courtade','GRENOBLE');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('2','BERTOLINI','Alban','Rue theophile boudier','');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('3','RAFFE','Benedicte','Rue des acacias','CREON');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('4','BLANCHETON','Fred','Rue cazaubaque','LIGNAN DE BORDEAUX');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('5','ALAUX','Barbara','Rue des chartrons','BORDEAUX');
+
+
 /*CREATE TABLE Reservations*/
 CREATE TABLE RESERVATIONS(
   NumCl NUMERIC(10) REFERENCES CLIENTS,
@@ -126,13 +133,26 @@ CREATE TABLE RESERVATIONS(
   PRIMARY KEY(NomCl,NumHo,NumTy,DateA)
   );
   
+  INSERT INTO RESERVATIONS(NumCL,NumHo,NumTy,DateA,NbJours,NbChambres) VALUES('1','1','4','2015-02-01 10:30:10','4','1');
+  INSERT INTO RESERVATIONS(NumCL,NumHo,NumTy,DateA,NbJours,NbChambres) VALUES('2','1','1','2015-02-01 10:30:10','1','2');
+  INSERT INTO RESERVATIONS(NumCL,NumHo,NumTy,DateA,NbJours,NbChambres) VALUES('3','2','1','2015-04-01 10:30:10','1','2');
+  INSERT INTO RESERVATIONS(NumCL,NumHo,NumTy,DateA,NbJours,NbChambres) VALUES('4','4','1','2015-02-01 10:30:10','1','2');
+  INSERT INTO RESERVATIONS(NumCL,NumHo,NumTy,DateA,NbJours,NbChambres) VALUES('5','3','3','2015-02-01 10:30:10','2','2');
+
 /*CREATE TABLE Occupations*/
 CREATE TABLE OCCUPATIONS(
   NumCl NUMERIC(10) NOT NULL,
   NumHo NUMERIC(10),
   NumCh NUMERIC(10),
-  DateA TimeStamps(0) NOT NULL,
-  DateD TimeStamps(0) CHECK (DateD> DateA),
+  DateA TimeStamps(0),NOT NULL,
+  DateD TimeStamps(0) CHECK (DateD> DateA), /*Peut être null => UPDATE lors du départ du client*/
   PRIMARY KEY(NumHo,NumCh,DateA)
 );
+
+  INSERT INTO TABLE OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('1','1','100','2015-02-01 10:30:10');  
+  INSERT INTO TABLE OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('2','1','101','2015-02-01 10:30:10');
+  INSERT INTO TABLE OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('3','2','90','2015-04-01 10:30:10');
+  INSERT INTO TABLE OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('4','4','80','2015-02-01 10:30:10');
+  INSERT INTO TABLE OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('5','3','30','2015-02-01 10:30:10');
+
 
