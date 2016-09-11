@@ -144,7 +144,7 @@ CREATE TABLE OCCUPATIONS(
   NumCl NUMERIC(10) NOT NULL,
   NumHo NUMERIC(10),
   NumCh NUMERIC(10),
-  DateA TimeStamps(0),NOT NULL,
+  DateA TimeStamps(0) NOT NULL,
   DateD TimeStamps(0) CHECK (DateD> DateA), /*Peut être null => UPDATE lors du départ du client*/
   PRIMARY KEY(NumHo,NumCh,DateA)
 );

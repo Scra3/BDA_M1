@@ -54,9 +54,28 @@ WHERE T.NumTy = C.NumTy
 GROUP BY T.NomTy,H.NomHo;
 
 /*Question 9*/
-SELECT C.NomCL,
-FROM CLIENTS C,OCCUPATIONS O
-WHERE C.NumCl = O.NumCl
-  /*CONDITION QUE LE CLIENT EST UNIQUEMENT OCCUPE DU 4 ETOILES*/
-  CASE
 
+SELECT C.NomCL, CASE WHEN MIN(H.NbEtoilesHo) = MAX(H.NbEtoilesHo) AND H.NbEtoilesHo ='4' THEN TRUE 
+        ELSE NULL END uniquementQuatresEtoiles,
+FROM CLIENTS C,OCCUPATIONS O,HOTELS H
+WHERE C.NumCl = O.NumCl
+  AND H.NumHo = O.NumHo
+GROUP BY C.NomCl;
+
+/*Question 10*/
+SELECT C.NomCL, H.NbEtoilesHo ,COUNT(H.NbEtoilesHo) AS maxEtoiles 
+FROM CLIENTS C,OCCUPATIONS O,HOTELS H
+WHERE C.NumCl = O.NumCl
+  AND H.NumHo = O.NumHo
+  AND H.NbEtoilesHo = '4'
+  AND ROWNUM <= 3
+ORDER BY maxEtoiles
+GROUP BY C.NomCl;
+
+/*Question 11*/
+
+SELECT CASE WHEN COUNT(T.NomTy) > '0' THEN COUNT(T.NomTy ELSE 'Aucune reservation' END , T.NomTy
+FROM TYPESCHAMBRE T , OCCUPATIONS O
+WHERE O.NumHo = '2',
+  AND(O.DateA,O.DateD) OVERLAPS('2015 -10-15','2015-10-28');
+  
