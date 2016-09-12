@@ -10,18 +10,19 @@ FROM HOTELS;
 
 /*Question 3 */
 SELECT NomTy
-FROM OCCUPATIONS O, TYPESCHAMBRE T,RESERVATION R
+FROM OCCUPATIONS O, TYPESCHAMBRE T,RESERVATIONS R
 WHERE O.NumCl = R.NumCl AND R.NumTy = T.NumTy ;
 
 
 /*Question 4*/
-SELECT C.NomCl H.VilleHo,O.DateA - O.DateD AD DateDiff
+SELECT C.NomCl VilleHo,O.DateA ,O.DateD 
 FROM OCCUPATIONS O, CLIENTS C, HOTELS H
 WHERE O.NumCl = C.NumCl AND H.NumHo = O.NumHo
-ORDER BY C.NomCl ASC, DateDiff;
+ORDER BY C.NomCl ASC;
 
 /*Question 5*/
-SELECT C.NomCl, H.NomHo, C.VilleCl, GREATEST(O1.DateA,O2.DateA) AS Debut,LAST(O1.DateD,O2.Dated) AS Fin
+
+SELECT C2.NomCl, C2.VilleCl ,C1.NomCl, H.NomHo, C1.VilleCl, GREATEST(O1.DateA,O2.DateA) AS Debut,LEAST(O1.DateD,O2.DateD) AS Fin
 FROM HOTELS H, CLIENTS C1, OCCUPATIONS O1,CLIENTS C2, OCCUPATIONS O2 
 WHERE C1.NumCl = O1.NumCl 
   AND C2.NumCl = O2.NumCl 
@@ -33,15 +34,15 @@ WHERE C1.NumCl = O1.NumCl
   
 /*Question 6*/
 SELECT COUNT(C.NumHo),C.NumHo
-FROM CHAMBRE C
-WHERE C.NumTy
+FROM CHAMBRES C
 GROUP BY C.NumHo;
 
-/*Question 7 Chambre luxe Le sud */
+/*Question 7 Chambre luxe Le sud  A FINIR */ 
 
 SELECT T.NomTy,COUNT(T.NomTy)
-FROM TYPESCHAMBRES T, HOTELS H, OCCUPATIONS O
-WHERE T.NumTy = O.NumTy
+FROM TYPESCHAMBRE T, HOTELS H, OCCUPATIONS O, CHAMBRES C
+WHERE O.NumCh = C.NumCh
+  AND T.NUMTY = C.NUMTY
   AND H.NumHo = O.NumHo
   AND T.NomTy = 'Luxe'
   AND H.NomHo = 'Le sud';
