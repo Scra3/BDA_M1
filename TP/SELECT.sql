@@ -44,8 +44,10 @@ FROM TYPESCHAMBRE T, HOTELS H, OCCUPATIONS O, CHAMBRES C
 WHERE O.NumCh = C.NumCh
   AND T.NUMTY = C.NUMTY
   AND H.NumHo = O.NumHo
-  AND T.NomTy = 'Luxe'
-  AND H.NomHo = 'Le sud';
+  AND T.NomTy = 'Luxe' /* = Chambre double*/
+  AND H.NomHo = 'Le sud'
+  AND NOT (O.DateA,O.DateD) OVERLAPS (SYSDATE,SYSDATE + INTERVAL '1' DAY)
+  ;
   
 /*Question 8*/
 SELECT COUNT(T.NumTy),T.NomTy,H.NomHo
@@ -55,7 +57,6 @@ WHERE T.NumTy = C.NumTy
 GROUP BY T.NomTy,H.NomHo;
 
 /*Question 9*/
-
 SELECT C.NomCL, CASE WHEN MIN(H.NbEtoilesHo) = MAX(H.NbEtoilesHo) AND H.NbEtoilesHo ='4' THEN TRUE 
         ELSE NULL END uniquementQuatresEtoiles,
 FROM CLIENTS C,OCCUPATIONS O,HOTELS H

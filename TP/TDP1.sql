@@ -1,11 +1,7 @@
-/*DELETE BD*/
-
+/*DELETE BD
 DROP TABLE Hotels;
 DROP TABLE Clients;
-
 DROP TABLE Chambre;
-
-/*
 DROP TABLE TypesCHambre;
 DROP TABLE Reservations;
 DROP TABLE Occupations;
