@@ -123,6 +123,8 @@ INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('2','BERTOLINI
 INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('3','RAFFE','Benedicte','Rue des acacias','CREON');
 INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('4','BLANCHETON','Fred','Rue cazaubaque','LIGNAN DE BORDEAUX');
 INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('5','ALAUX','Barbara','Rue des chartrons','BORDEAUX');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('6','ALBAN1','Barbara','Rue des chartrons','BORDEAUX');
+INSERT INTO CLIENTS(NumCl,NomCL,PrenomCl,RueAdrCl,VilleCl) VALUES('7','ALBAN2','Barbara2','Rue des chartrons','BORDEAUX');
 
 
 /*CREATE TABLE Reservations*/
@@ -166,5 +168,7 @@ END;*/
   INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('3','2','90','14-04-2016 10:30:30');
   INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('4','4','80','15-02-2016 10:30:30');
   INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA)VALUES ('5','3','30','16-02-2016 10:30:30');
+  INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA,DateD)VALUES ('6','3','31','16-02-2016 10:30:30','18-02-2016 10:30:30');
+  INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA,DateD)VALUES ('7','3','32','16-02-2016 10:30:30','17-02-2016 10:30:30');
 
 
