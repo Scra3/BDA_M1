@@ -1,3 +1,5 @@
+  INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA,DateD)VALUES ('9','2','6','12-09-2016 10:30:30','15-09-2016 10:30:30');
+
 /* Question 1*/
 SELECT NomHo 
 FROM HOTELS 
@@ -42,42 +44,47 @@ GROUP BY C.NumHo;
 SELECT T.NomTy,COUNT(T.NomTy)
 FROM TYPESCHAMBRE T, HOTELS H, OCCUPATIONS O, CHAMBRES C
 WHERE O.NumCh = C.NumCh
-  AND T.NUMTY = C.NUMTY
+  AND T.NumTY = C.NumTY
   AND H.NumHo = O.NumHo
-  AND T.NomTy = 'Luxe' /* = Chambre double*/
-  AND H.NomHo = 'Le sud'
-  AND NOT (O.DateA,O.DateD) OVERLAPS (SYSDATE,SYSDATE + INTERVAL '1' DAY)
-  ;
+  AND T.NomTy = 'Luxe' 
+  AND H.NumHo = '2'
+  AND  NOT (O.DateA,O.DateD) OVERLAPS (localtimestamp,localtimestamp + interval '1' day)
+  GROUP BY T.NomTy;
   
 /*Question 8*/
 SELECT COUNT(T.NumTy),T.NomTy,H.NomHo
-FROM TYPESCHAMBRE T, HOTELS H,CHAMBRE C
+FROM TYPESCHAMBRE T, HOTELS H,CHAMBRES C
 WHERE T.NumTy = C.NumTy
   AND H.NumHo = C.NumHo
-GROUP BY T.NomTy,H.NomHo;
+GROUP BY T.NomTy,H.NomHo
+ORDER BY H.NOMHO;
 
 /*Question 9*/
-SELECT C.NomCL, CASE WHEN MIN(H.NbEtoilesHo) = MAX(H.NbEtoilesHo) AND H.NbEtoilesHo ='4' THEN TRUE 
-        ELSE NULL END uniquementQuatresEtoiles,
-FROM CLIENTS C,OCCUPATIONS O,HOTELS H
-WHERE C.NumCl = O.NumCl
-  AND H.NumHo = O.NumHo
-GROUP BY C.NomCl;
 
-/*Question 10*/
-SELECT C.NomCL, H.NbEtoilesHo ,COUNT(H.NbEtoilesHo) AS maxEtoiles 
-FROM CLIENTS C,OCCUPATIONS O,HOTELS H
+SELECT C.NomCL
+FROM CLIENTS C ,OCCUPATIONS O,HOTELS H
 WHERE C.NumCl = O.NumCl
   AND H.NumHo = O.NumHo
   AND H.NbEtoilesHo = '4'
-  AND ROWNUM <= 3
-ORDER BY maxEtoiles
-GROUP BY C.NomCl;
+  AND C.NumCL  NOT IN (SELECT C.NumCL 
+                      FROM  CLIENTS C, OCCUPATIONS O,HOTELS H
+                      WHERE C.NumCl = O.NumCl
+                      AND H.NumHo = O.NumHo
+                      AND H.NbEtoilesHo <> '4')
+ GROUP BY C.NomCl;
+
+/*Question 10*/
+SELECT C.NomCl,H.NbEtoilesHO,COUNT(*)
+FROM CLIENTS C,OCCUPATIONS O,HOTELS H
+WHERE C.NumCl = O.NumCl
+  AND H.NumHo = O.NumHo
+  AND H.NbEtoilesHO ='4'
+  ORDER BY C.NomCl
+  group by C.NomCl;
 
 /*Question 11*/
-
-SELECT CASE WHEN COUNT(T.NomTy) > '0' THEN COUNT(T.NomTy ELSE 'Aucune reservation' END , T.NomTy
+SELECT CASE WHEN COUNT(T.NomTy) > 0 THEN COUNT(T.NomTy) ELSE 1 END , T.NomTy
 FROM TYPESCHAMBRE T , OCCUPATIONS O
-WHERE O.NumHo = '2',
-  AND(O.DateA,O.DateD) OVERLAPS('2015 -10-15','2015-10-28');
-  
+WHERE O.NumHo = '2'
+  AND(O.DateA,O.DateD) OVERLAPS( TIMESTAMP '2015-10-15 00:00:00', TIMESTAMP '2015-10-28 00:00:00')
+GROUP BY T.NomTy;
