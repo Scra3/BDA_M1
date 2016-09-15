@@ -1,4 +1,3 @@
-  INSERT INTO  OCCUPATIONS(NumCl,NumHo,NumCh,DateA,DateD)VALUES ('9','2','6','12-09-2016 10:30:30','15-09-2016 10:30:30');
 
 /* Question 1*/
 SELECT NomHo 
