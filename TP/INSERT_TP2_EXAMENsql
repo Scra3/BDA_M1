@@ -1,6 +1,6 @@
-/*-----------------------------------------------------------------------------
-INSERTS
-------------------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------
+                                  INSERTS
+----------------------------------------------------------------------------------*/
 /*ETUDIANTS*/
 INSERT INTO `ETUDIANTS` (`NumEtu`,`NomEtu`,`PrenomEtu`) VALUES (1,'Courtney','Delacruz');
 INSERT INTO `ETUDIANTS` (`NumEtu`,`NomEtu`,`PrenomEtu`) VALUES (2,'Nicole','Chaney');
@@ -172,16 +172,16 @@ INSERT INTO `OCCUPATIONS` (`NumSal`,`NumEpr`,`NbPlacesOcc`) VALUES (9,5,83);
 
 /*SURVEILLANCES*/
 
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (11,3,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (4,2,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (3,12,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (5,9,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (3,11,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (4,6,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (16,2,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (7,5,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (5,16,'03-05-17 10:30:10');
-INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (2,8,'03-05-17 10:30:10');
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (11,'03-05-17 10:30:10',3);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (4,'03-05-17 10:30:10',2);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (3,'03-05-17 10:30:10',12);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (5,'03-05-17 10:30:10',9);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (3,'03-05-17 10:30:10',11);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (4,'03-05-17 10:30:10',6);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (16,'03-05-17 10:30:10',2);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (7,'03-05-17 10:30:10',5);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (5,'03-05-17 10:30:10',16);
+INSERT INTO `SURVEILLANCES` (`NumEns`,`DateHeureDebut`,`NumSal`) VALUES (2,'03-05-17 10:30:10',8);
 
 
 
