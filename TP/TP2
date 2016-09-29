@@ -172,3 +172,13 @@ CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
 END;
 \
 
+/*QUESTION 2 */ 
+/*On cherche toutes les épreuves qui ont lieu dans la même salle au même moment doivent commencer en même temps */
+
+/* On vérifie l'insertion ou la  modification de l' horraire de l'épreuve ( Nous utiliserons le after et c'est en différé*/
+
+
+/*On vérifie si deux épreuves commencent bien en même temps et qu'ils sont dans la même salle , on check l'insertion et l'update after et différé */
+CREATE TRIGGER
+
+
