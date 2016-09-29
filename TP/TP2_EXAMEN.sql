@@ -90,17 +90,17 @@ CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
       BEGIN
         SELECT DureeEpr INTO DureeEpr
         FROM EPREUVES E
-        WHERE E = : NEW.NumEpr;
+        WHERE E.NumEpr = : NEW.NumEpr;
         
         SELECT 1 INTO N 
         FROM HORAIRES H,INSCRIPTIONS I ,EPREUVES E
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
-              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (NEW.DateHeureDebut,NEW.DateHeureDebut + DureeEpr);
+              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (:NEW.DateHeureDebut,:NEW.DateHeureDebut + DureeEpr);
               /*Si on arrive a cette ligne erreur*/
-             RAISE too_many_rows;
-      EXCEPTION 
+        RAISE too_many_rows;
+        EXCEPTION 
         WHEN no_data_found THEN NULL;
         WHEN too_many_rows  THEN RAISE_APPLICATION_ERROR(-100,'Des �tudiants sont d�ja en �preuve');
 END;
@@ -112,26 +112,27 @@ CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
   BEFORE UPDATE OR INSERT ON INSCRIPTIONS
     FOR EACH ROW
       DECLARE
-         N BINARY_INTEGER;
+        N BINARY_INTEGER;
         DureeEpr INTERVAL DAY TO SECOND(0);
         DateHeureDebut TIMESTAMP(0);
         BEGIN
-        RAISE too_many_rows;
         
         SELECT DureeEpr INTO DureeEpr
         FROM EPREUVES E
-        WHERE E = : NEW.NumEpr;
+        WHERE E.NumEpr = : NEW.NumEpr;
         
         SELECT DateHeureDebut INTO DateHeureDebut
         FROM HORAIRES H
-        WHERE H.NumEpr = New.NumEpr;
+        WHERE H.NumEpr = :New.NumEpr;
         
         SELECT 1 INTO N 
         FROM EPREUVES E , INSCRIPTIONS I , HORAIRES H
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
-              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (DateHeureDebut,DateHeureDebut + DureeEpr);
+              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (:DateHeureDebut,:DateHeureDebut + DureeEpr);
+
+        RAISE too_many_rows;
 
         EXCEPTION
           WHEN no_data_found THEN NULL;
@@ -148,7 +149,6 @@ CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
          N BINARY_INTEGER;
         DateHeureDebut TIMESTAMP(0);
         BEGIN
-        RAISE too_many_rows;
         
         
         SELECT DateHeureDebut INTO DateHeureDebut
@@ -160,7 +160,9 @@ CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
-              (H.DateHeureDebut,H.DateHeureDebut + New.DureeEpr) OVERLAPS (DateHeureDebut,DateHeureDebut +  New.DureeEpr);
+              (H.DateHeureDebut,H.DateHeureDebut + New.DureeEpr) OVERLAPS (:DateHeureDebut,:DateHeureDebut +  New.DureeEpr);
+
+        RAISE too_many_rows;
 
         EXCEPTION
           WHEN no_data_found THEN NULL;
