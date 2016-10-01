@@ -153,7 +153,7 @@ INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (17,'03-05-19 10:30:10');
 
 DROP TRIGGER VERIFIER_UPDATE_EPREUVES;
 CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
-  BEFORE UPDATE OF DureeEpr,NumEpr ON EPREUVES
+  BEFORE UPDATE OF DureeEpr ON EPREUVES
       DECLARE
          N BINARY_INTEGER;
         BEGIN
@@ -184,26 +184,139 @@ UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South Wal
 
 CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_SALLES_CAPACITE                                                                          
   BEFORE UPDATE OF capaciteSal ON SALLES  
-      DECLARE
-         N BINARY_INTEGER;
-        BEGIN
-        
-        SELECT 1 INTO N 
-        FROM EPREUVES E , EPREUVES A ,INSCRIPTIONS I , HORAIRES H, HORAIRES C
-        WHERE H.NumEpr = E.NumEpr AND
-              E.NumEpr = I.NumEpr AND
-              H.NumEpr = I.NumEpr AND
-              
-              C.NumEpr = E.NumEpr AND
-              A.NumEpr = E.NumEpr AND
-              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (C.DateHeureDebut,C.DateHeureDebut +  A.DureeEpr);
+      FOR EACH ROW
+        DECLARE
+           N BINARY_INTEGER;
+          BEGIN
+          
+          SELECT 1 INTO N 
+          FROM OCCUPATIONS O1,OCCUPATIONS O2, EPREUVES E1 , EPREUVES E2, HORAIRES H1, HORAIRES H2
+          WHERE 
+                -- epreuve 1
+                H1.NumEpr = E1.NumEpr AND
+                E1.NumEpr = O1.NumEpr AND
+                O1.NumSal = : New.NumSal AND 
+                -- epreuve 2
+                H2.NumEpr = E2.NumEpr AND
+                E2.NumEpr = O2.NumEpr AND
+                O2.NumSal = : New.NumSal AND 
+                -- Occupation meme salles
+                02.NumSal = 01.NumSal AND
+                -- parcour de la table
+                E1.NumEpr < E2.NumEpr AND
+                -- meme horaires
+                (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut +  E2.DureeEpr);
+                -- vérification de la capacité salle
+                AND O1.NbPlacesOcc + O2.NbPlacesOcc > : NEW.CapaciteSal; 
 
-        RAISE too_many_rows;
+          RAISE too_many_rows;
 
-        EXCEPTION
-          WHEN no_data_found THEN NULL;
-          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-10,'l etudiant est d�ja dans une �preuve');
+          EXCEPTION
+            WHEN no_data_found THEN NULL;
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-11,'Capacité salle dépassé');
 END;
 
 
+CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_OCCUPATIONS_NBPlACESOCC                                                                         
+  BEFORE UPDATE OR INSERT ON OCCUPATIONS 
+        DECLARE
+           N BINARY_INTEGER;
+          BEGIN
 
+          SELECT 1 INTO N 
+          FROM OCCUPATIONS O1,OCCUPATIONS O2,SALLES S, EPREUVES E1 , EPREUVES E2, HORAIRES H1, HORAIRES H2
+          WHERE 
+                -- epreuve 1
+                H1.NumEpr = E1.NumEpr AND
+                E1.NumEpr = O1.NumEpr AND
+                O1.NumSal = S.NumSal AND 
+                -- epreuve 2
+                H2.NumEpr = E2.NumEpr AND
+                E2.NumEpr = O2.NumEpr AND
+                O2.NumSal = S.NumSal AND 
+                -- Occupation meme salles
+                02.NumSal = 01.NumSal AND
+                -- parcour de la table
+                E1.NumEpr < E2.NumEpr AND
+                -- meme horaires
+                (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut +  E2.DureeEpr);
+                -- vérification de la capacité salle
+                AND O1.NbPlacesOcc + O2.NbPlacesOcc > S.CapaciteSal; 
+
+          RAISE too_many_rows;
+
+          EXCEPTION
+            WHEN no_data_found THEN NULL;
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-12,'Le nb de place occupé par l epreuve dépasse la capacité de la salle');
+END;
+
+CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_EPREUVES_NBPlACESOCC                                                                         
+  BEFORE UPDATE OR INSERT ON EPREUVES 
+        DECLARE
+           N BINARY_INTEGER;
+          BEGIN
+
+          SELECT 1 INTO N 
+          FROM OCCUPATIONS O1,OCCUPATIONS O2,SALLES S, EPREUVES E1 , EPREUVES E2, HORAIRES H1, HORAIRES H2
+          WHERE 
+                -- epreuve 1
+                H1.NumEpr = E1.NumEpr AND
+                E1.NumEpr = O1.NumEpr AND
+                O1.NumSal = S.NumSal AND 
+                -- epreuve 2
+                H2.NumEpr = E2.NumEpr AND
+                E2.NumEpr = O2.NumEpr AND
+                O2.NumSal = S.NumSal AND 
+                -- Occupation meme salles
+                02.NumSal = 01.NumSal AND
+                -- parcour de la table
+                E1.NumEpr < E2.NumEpr AND
+                -- meme horaires
+                (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut +  E2.DureeEpr);
+                -- vérification de la capacité salle
+                AND O1.NbPlacesOcc + O2.NbPlacesOcc > S.CapaciteSal; 
+
+          RAISE too_many_rows;
+
+          EXCEPTION
+            WHEN no_data_found THEN NULL;
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-12,'Le nb de place occupé par l epreuve dépasse la capacité de la salle');
+END;
+
+CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_INSERT_SURVEILLANCES                                                                         
+  BEFORE UPDATE OR INSERT ON SURVEILLANCES
+    FOR EACH ROW  
+        DECLARE
+           N BINARY_INTEGER;
+          BEGIN
+          SELECT 1 INTO N 
+          FROM HORAIRES H, OCCUPATIONS O
+          WHERE 
+            O.NumSal = : NEW.NumSal AND
+            O.NumEpr = H.NumEpr AND 
+            H.DateHeureDebut != : NEW.DateHeureDebut ;
+          RAISE too_many_rows;
+
+          EXCEPTION
+            WHEN no_data_found THEN NULL;
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-13,'Le prof surveille une salle vide ! ^^');
+END;
+
+CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_INSERT_HORAIRES                                                                         
+  BEFORE UPDATE OR INSERT ON HORAIRES
+    FOR EACH ROW  
+        DECLARE
+           N BINARY_INTEGER;
+          BEGIN
+          SELECT 1 INTO N 
+          FROM  SURVEILLANCES S, OCCUPATIONS O
+          WHERE 
+            O.NumEpr = : NEW.NumEpr AND
+            O.NumSal = S.NumSal AND
+            O.DateHeureDebut != : NEW.DateHeureDebut;
+          RAISE too_many_rows;
+
+          EXCEPTION
+            WHEN no_data_found THEN NULL;
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-13,'Le prof surveille une salle vide ! ^^');
+END;
