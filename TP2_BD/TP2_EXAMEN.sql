@@ -169,7 +169,7 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
               H2.NumEpr = E2.NumEpr AND
               E2.NumEpr = I2.NumEpr AND
               H2.NumEpr = I2.NumEpr AND
-              I1.NumEtu < I2.NumEtu AND
+              I1.NumEtu = I2.NumEtu AND
               (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut + E2.DureeEpr);
 
         RAISE too_many_rows;
