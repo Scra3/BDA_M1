@@ -72,8 +72,13 @@ CREATE TABLE SURVEILLANCES(
   FOREIGN KEY (NumEns) REFERENCES ENSEIGNANTS(NumEns)
 )
 
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> refs/remotes/origin/master
 /*----------------------------------------------------------------------------
 CREATION DES TRIGGERS
 ------------------------------------------------------------------------------*/
@@ -97,7 +102,11 @@ CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
+<<<<<<< HEAD
               (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (: NEW.DateHeureDebut,: NEW.DateHeureDebut + DureeEpr);
+=======
+              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (:NEW.DateHeureDebut,:NEW.DateHeureDebut + DureeEpr);
+>>>>>>> refs/remotes/origin/master
               /*Si on arrive a cette ligne erreur*/
         RAISE too_many_rows;
         EXCEPTION 
@@ -106,11 +115,14 @@ CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
 END;
 \
 
+<<<<<<< HEAD
 /*INSERT DE TEST VERIFIER_EPREUVE_ETUDIANT*/
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (8,'28-04-16 20:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (12,'28-04-16 20:30:10');
 /*----------------------------------------*/
 
+=======
+>>>>>>> refs/remotes/origin/master
 /* On cherche si un �tudiant n'a pas d'autre �preuve avec un cr�neau en commun sur l'�preuve o� il s'inscrit */
 DROP TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT;
 CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
@@ -128,14 +140,22 @@ CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
         
         SELECT DateHeureDebut INTO DateHeureDebutGet
         FROM HORAIRES H
+<<<<<<< HEAD
         WHERE H.NumEpr = : New.NumEpr;
+=======
+        WHERE H.NumEpr = :New.NumEpr;
+>>>>>>> refs/remotes/origin/master
         
         SELECT 1 INTO N 
         FROM EPREUVES E , INSCRIPTIONS I , HORAIRES H
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
+<<<<<<< HEAD
               (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (DateHeureDebutGet,DateHeureDebutGet + DureeEpr);
+=======
+              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (:DateHeureDebut,:DateHeureDebut + DureeEpr);
+>>>>>>> refs/remotes/origin/master
 
         RAISE too_many_rows;
 
@@ -144,11 +164,15 @@ CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
           WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-10,'l etudiant est d�ja dans une �preuve');
 END;
 \
+<<<<<<< HEAD
 /*INSERT DE TEST VERIFIER_INSCRIPTIONS_ETUDIANT*/
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (20,'03-05-17 10:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (20,'03-05-18 10:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (17,'03-05-19 10:30:10');
 /*----------------------------------------------*/
+=======
+
+>>>>>>> refs/remotes/origin/master
 /*On v�rifie sur la modification d' epreuve ( Uniquement sur la modification car les contraintes de clefs se charge du reste ) */
 
 DROP TRIGGER VERIFIER_UPDATE_EPREUVES;
@@ -157,16 +181,28 @@ CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
       DECLARE
          N BINARY_INTEGER;
         BEGIN
+<<<<<<< HEAD
+=======
+        
+        
+        SELECT DateHeureDebut INTO DateHeureDebut
+        FROM HORAIRES H
+        WHERE H.NumEpr = New.NumEpr;
+>>>>>>> refs/remotes/origin/master
         
         SELECT 1 INTO N 
         FROM EPREUVES E , EPREUVES A ,INSCRIPTIONS I , HORAIRES H, HORAIRES C
         WHERE H.NumEpr = E.NumEpr AND
               E.NumEpr = I.NumEpr AND
               H.NumEpr = I.NumEpr AND
+<<<<<<< HEAD
               
               C.NumEpr = E.NumEpr AND
               A.NumEpr = E.NumEpr AND
               (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (C.DateHeureDebut,C.DateHeureDebut +  A.DureeEpr);
+=======
+              (H.DateHeureDebut,H.DateHeureDebut + New.DureeEpr) OVERLAPS (:DateHeureDebut,:DateHeureDebut +  New.DureeEpr);
+>>>>>>> refs/remotes/origin/master
 
         RAISE too_many_rows;
 

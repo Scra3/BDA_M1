@@ -144,8 +144,11 @@ INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (1,'09-07-16 5:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (6,'20-08-16 5:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (4,'25-02-16 5:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (10,'10-06-16 12:30:10');
+<<<<<<< HEAD
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (20,'03-05-17 10:30:10');
 
+=======
+>>>>>>> refs/remotes/origin/master
 
 /*OCCUPATIONS*/
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (4,4,30);
