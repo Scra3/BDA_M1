@@ -156,8 +156,6 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
   BEFORE UPDATE ON INSCRIPTIONS
       DECLARE
         N BINARY_INTEGER;
-        DureeEpr INTERVAL DAY TO SECOND(0);
-        DateHeureDebutGet TIMESTAMP(0);
         BEGIN
       
         SELECT 1 INTO N 
@@ -165,7 +163,6 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
         WHERE H1.NumEpr = E1.NumEpr AND
               E1.NumEpr = I1.NumEpr AND
               H1.NumEpr = I1.NumEpr AND
-              I2.NumEpr = I1.NumEpr AND
               H2.NumEpr = E2.NumEpr AND
               E2.NumEpr = I2.NumEpr AND
               H2.NumEpr = I2.NumEpr AND
