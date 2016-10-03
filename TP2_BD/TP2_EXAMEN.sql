@@ -181,74 +181,64 @@ UPDATE EPREUVES SET NomEpr = 'New South WalesV2' WHERE NomEpr ='New South Wales'
 UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South WalesV2';
 
 /*-------------------------QUESTION 3-------------------------------------------------------*/
-
-CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_SALLES_CAPACITE                                                                          
-  BEFORE UPDATE OF capaciteSal ON SALLES  
+DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
+CREATE TRIGGER  VERIFIER_U_SALLES_CAPACITE                                                                          
+  BEFORE UPDATE OF capaciteSal,NumSal ON SALLES  
       FOR EACH ROW
         DECLARE
            N BINARY_INTEGER;
           BEGIN
           
-          SELECT 1 INTO N 
-          FROM OCCUPATIONS O1,OCCUPATIONS O2, EPREUVES E1 , EPREUVES E2, HORAIRES H1, HORAIRES H2
+          SELECT 1  INTO N 
+          FROM EPREUVES E, HORAIRES H, OCCUPATIONS P
           WHERE 
-                -- epreuve 1
-                H1.NumEpr = E1.NumEpr AND
-                E1.NumEpr = O1.NumEpr AND
-                O1.NumSal = : New.NumSal AND 
-                -- epreuve 2
-                H2.NumEpr = E2.NumEpr AND
-                E2.NumEpr = O2.NumEpr AND
-                O2.NumSal = : New.NumSal AND 
-                -- Occupation meme salles
-                02.NumSal = 01.NumSal AND
-                -- parcour de la table
-                E1.NumEpr < E2.NumEpr AND
-                -- meme horaires
-                (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut +  E2.DureeEpr);
+                  E.NumEpr = H.NumEpr AND
+                  P.NumEpr = E.NumEpr  AND
+                  P.NumSal = : NEW.NumSal
                 -- vérification de la capacité salle
-                AND O1.NbPlacesOcc + O2.NbPlacesOcc > : NEW.CapaciteSal; 
-
+                  GROUP BY (H.dateHeureDebut) 
+                  HAVING SUM(P.NbPlacesOcc) > : NEW.CapaciteSal; 
+            
           RAISE too_many_rows;
 
           EXCEPTION
             WHEN no_data_found THEN NULL;
-            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-11,'Capacité salle dépassé');
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20236,'Capacité salle dépassé');
 END;
 
+/* Jeu de test*/
+UPDATE SALLES SET CapaciteSal= '10' WHERE numSal = '1';
+UPDATE SALLES SET CapaciteSal= '0' WHERE numSal = '1';
 
-CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_OCCUPATIONS_NBPlACESOCC                                                                         
+
+DROP TRIGGER VERIFIER_U_OCC_NBPlACESOCC;
+CREATE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC                                                                         
   BEFORE UPDATE OR INSERT ON OCCUPATIONS 
         DECLARE
            N BINARY_INTEGER;
           BEGIN
-
-          SELECT 1 INTO N 
-          FROM OCCUPATIONS O1,OCCUPATIONS O2,SALLES S, EPREUVES E1 , EPREUVES E2, HORAIRES H1, HORAIRES H2
+        
+          SELECT dateHeureDebut,S.CapaciteSal,SUM(O.NbPlacesOcc),S.NumSal
+          FROM  HORAIRES H, SALLES S,OCCUPATIONS O
           WHERE 
-                -- epreuve 1
-                H1.NumEpr = E1.NumEpr AND
-                E1.NumEpr = O1.NumEpr AND
-                O1.NumSal = S.NumSal AND 
-                -- epreuve 2
-                H2.NumEpr = E2.NumEpr AND
-                E2.NumEpr = O2.NumEpr AND
-                O2.NumSal = S.NumSal AND 
-                -- Occupation meme salles
-                02.NumSal = 01.NumSal AND
-                -- parcour de la table
-                E1.NumEpr < E2.NumEpr AND
-                -- meme horaires
-                (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut +  E2.DureeEpr);
+                  H.NumEpr = O.NumEpr AND
+                  O.NumSal = S.NumSal
+                  
                 -- vérification de la capacité salle
-                AND O1.NbPlacesOcc + O2.NbPlacesOcc > S.CapaciteSal; 
-
+                  GROUP BY H.dateHeureDebut,S.CapaciteSal,S.NumSal
+                  HAVING SUM(O.NbPlacesOcc) > S.CapaciteSal; 
+            
           RAISE too_many_rows;
 
           EXCEPTION
             WHEN no_data_found THEN NULL;
-            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-12,'Le nb de place occupé par l epreuve dépasse la capacité de la salle');
+            WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20237,'Le nb de place occupé par l epreuve dépasse la capacité de la salle');
 END;
+
+/* Jeu de test*/
+UPDATE OCCUPATIONS SET NbPlacesOcc= '1' WHERE numEpr = '4' AND NUMSAL = '4';
+UPDATE OCCUPATIONS SET NbPlacesOcc= '500' WHERE numSal = '4';
+
 
 CREATE TRIGGER OR REPLACE VERIFIER_UPDATE_EPREUVES_NBPlACESOCC                                                                         
   BEFORE UPDATE OR INSERT ON EPREUVES 
