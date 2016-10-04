@@ -1,13 +1,6 @@
-/* CREATION DE LA BASE SESSION EXAMENS */
-DROP  TABLE ETUDIANTS;
-DROP  TABLE ENSEIGNANTS;
-DROP  TABLE SALLES;
-DROP  TABLE EPREUVES;
-DROP  TABLE INSCRIPTIONS;
-DROP  TABLE SURVEILLANCES;
-DROP  TABLE OCCUPATIONS;
-DROP TABLE HORAIRES;
-
+/*----------------------------------------------------------------------------
+CREATION DES TABLES
+------------------------------------------------------------------------------*/
 /*TABLE ETUDIANTS*/
 CREATE TABLE ETUDIANTS (
   NumEtu NUMBER(30) PRIMARY KEY ,
@@ -71,16 +64,75 @@ CREATE TABLE SURVEILLANCES(
   PRIMARY KEY(NumEns,DateHeureDebut),
   FOREIGN KEY (NumEns) REFERENCES ENSEIGNANTS(NumEns)
 )
-
-
-
+/*----------------------------------------------------------------------------
+INSERT DANS LES TABLES
+------------------------------------------------------------------------------*/
+/*ETUDIANTS*/
+INSERT INTO ETUDIANTS (NumEtu,NomEtu,PrenomEtu) VALUES (1,'Courtney','Delacruz');
+INSERT INTO ETUDIANTS (NumEtu,NomEtu,PrenomEtu) VALUES (2,'Nicole','Chaney');
+INSERT INTO ETUDIANTS (NumEtu,NomEtu,PrenomEtu) VALUES (3,'Denise','Forbes');
+/*ENSEIGNANTS*/
+INSERT INTO ENSEIGNANTS (NumEns,NomEns,PrenomEns) VALUES (1,'Macaulay','Knox');
+INSERT INTO ENSEIGNANTS (NumEns,NomEns,PrenomEns) VALUES (2,'Jade','Palmer');
+INSERT INTO ENSEIGNANTS (NumEns,NomEns,PrenomEns) VALUES (3,'Gannon','Stephenson');
+/*SALES*/
+INSERT INTO SALLES (NumSal,NomSal,CapaciteSal) VALUES (1,'Egestas LLC',1);
+INSERT INTO SALLES (NumSal,NomSal,CapaciteSal) VALUES (2,'Nunc Nulla PC',2);
+INSERT INTO SALLES (NumSal,NomSal,CapaciteSal) VALUES (3,'Nunc Sed',3);
+/*EPREUVES*/
+INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (1,'Ankara',INTERVAL '65' MINUTE);
+INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (2,'Hatay',INTERVAL '65' MINUTE);
+INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (3,'North Island',INTERVAL '65' MINUTE);
+/*INSCRIPTIONS*/
+INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (1,1);
+INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (2,1);
+INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (3,2);
+/*HORAIRES*/
+INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (1,'03-05-17 10:30:10');
+INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (2,'03-05-17 10:30:10');
+INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (3,'27-02-17 10:20:10');
+/*OCCUPATIONS*/
+INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (1,2,1);
+INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,1,2);
+INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (3,2,0);
+/*SURVEILLANCES*/
+INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (11,'03-05-17 10:30:10',3);
+INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (4,'03-05-17 10:30:10',2);
+INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (3,'03-05-17 10:30:10',12);
+/*----------------------------------------------------------------------------
+DROP DES TABLES
+------------------------------------------------------------------------------*/
+DROP  TABLE ETUDIANTS;
+DROP  TABLE ENSEIGNANTS;
+DROP  TABLE SALLES;
+DROP  TABLE EPREUVES;
+DROP  TABLE INSCRIPTIONS;
+DROP  TABLE SURVEILLANCES;
+DROP  TABLE OCCUPATIONS;
+DROP TABLE HORAIRES;
+/*----------------------------------------------------------------------------
+DROP DES TRIGGERS
+------------------------------------------------------------------------------*/
+DROP TRIGGER VERIFIER_EPREUVE_ETUDIANT;
+DROP TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT;
+DROP TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT;
+DROP TRIGGER VERIFIER_UPDATE_EPREUVES;
+DROP TRIGGER VERIFIER_INSER_HORAIRE_C2;
+DROP TRIGGER VERIFIER_INSER_OCCUPATIONS_C2;
+DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
+DROP TRIGGER VERIFIER_U_OCC_NBPlACESOCC;
+DROP TRIGGER VERIFIER_UI_INSERT_SURVEIL;
+DROP TRIGGER VERIFIER_U_INSERT_HOR;
 /*----------------------------------------------------------------------------
 CREATION DES TRIGGERS
 ------------------------------------------------------------------------------*/
 
 /*QUESTION 1*/
-/*On cherche si deux �preuves ont des �tudiant en commun et que les horaires soit bien distinctes */
-DROP TRIGGER VERIFIER_EPREUVE_ETUDIANT;
+
+/*On cherche si deux epreuves ont des etudiant en commun et que les horaires soit bien distinctes */
+
+/* On vérifie avant l'insertion d'une entrée dans la table HORAIRES */
+
   CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
     BEFORE INSERT ON HORAIRES 
       FOR EACH ROW
@@ -107,8 +159,10 @@ DROP TRIGGER VERIFIER_EPREUVE_ETUDIANT;
 
 /*----------------------------------------*/
 
-/* On cherche si un �tudiant n'a pas d'autre �preuve avec un cr�neau en commun sur l'�preuve o� il s'inscrit */
-DROP TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT;
+/* On cherche si un etudiant n'a pas d'autre epreuve avec un creneau en commun sur l'epreuve oe il s'inscrit */
+
+/* On vérifie avant l'insertion d'une entrée dans la table INSCRIPTIONS */
+
 CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
   BEFORE INSERT ON INSCRIPTIONS
     FOR EACH ROW
@@ -137,10 +191,10 @@ CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
 
         EXCEPTION
           WHEN no_data_found THEN NULL;
-          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est d�ja dans une �preuve');
+          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est deja dans une epreuve');
 END;
 
-\
+
 /*Jeux de test*/
 --Marche
 DELETE FROM INSCRIPTIONS WHERE NumEpr = '4' AND NumEtu = '1';
@@ -149,7 +203,8 @@ INSERT INTO INSCRIPTIONS (NumEpr,NumEtu) VALUES (4,1);
 INSERT INTO INSCRIPTIONS (NumEpr,NumEtu) VALUES (1,1);
 
 
-DROP TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT;
+/* On vérifie avant la modification dans la table INSCRITPIONS */ 
+
 CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
   AFTER UPDATE ON INSCRIPTIONS
       DECLARE
@@ -172,7 +227,7 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
 
         EXCEPTION
           WHEN no_data_found THEN NULL;
-          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est d�ja dans une �preuve');
+          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est deja dans une epreuve');
 END;
 
 /*Jeux de test*/
@@ -182,9 +237,9 @@ UPDATE INSCRIPTIONS SET NumEpr = '2'  WHERE NumEtu = '1' AND NumEpr IN(4,2,3);
 UPDATE INSCRIPTIONS SET NumEpr = '1'  WHERE NumEtu = '1' AND NumEpr ='3';
 
 /*----------------------------------------------*/
-/*On v�rifie sur la modification d' epreuve ( Uniquement sur la modification car les contraintes de clefs se charge du reste ) */
 
-DROP TRIGGER VERIFIER_UPDATE_EPREUVES;
+/*On verifie sur la modification d' epreuve ( Uniquement sur la modification car les contraintes de clefs se chargent du reste ) */
+
 CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
   AFTER UPDATE OF DureeEpr ON EPREUVES
       DECLARE
@@ -205,25 +260,32 @@ CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
 
         EXCEPTION
           WHEN no_data_found THEN NULL;
-          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20233,'l etudiant est d�ja dans une �preuve');
+          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20233,'l etudiant est deja dans une epreuve');
 END;
-\
+
+
+/*Jeux de test*/
 
 /*INSERT DE TEST VERIFIER_INSCRIPTIONS_ETUDIANT*/
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (8,'New South Wales',INTERVAL '65' MINUTE);
 UPDATE EPREUVES SET NomEpr = 'New South WalesV2' WHERE NomEpr ='New South Wales';
 UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South WalesV2';
 
+/******************************************************************************************************************************************************/
 
 /* QUESTION 2 */
-DROP TRIGGER VERIFIER_INSER_HORAIRE_C2;
+
+/* On cherche a vérifier qu'il n'y a pas deux épreuves en même temps dans une même salle, mais qui ne commencent pas à la même heure */
+
+/* On commence par vérifier avant un update dans HORAIRES */
+
 CREATE  TRIGGER VERIFIER_INSER_HORAIRE_C2
   AFTER UPDATE ON HORAIRES
   	DECLARE
     	N BINARY_INTEGER;
     	BEGIN
       
-   		   SELECT 1 INTO N 
+   	SELECT 1 INTO N 
         FROM EPREUVES E1, EPREUVES E2, HORAIRES H1,HORAIRES H2, OCCUPATIONS O1 , OCCUPATIONS O2
         WHERE H1.NumEpr = E1.NumEpr AND
               E1.NumEpr = O1.NumEpr AND
@@ -243,13 +305,14 @@ CREATE  TRIGGER VERIFIER_INSER_HORAIRE_C2
 END;
 
 /*Jeux de test*/
---marche
+--Marche
 UPDATE HORAIRES SET DateHeureDebut ='03/05/17 10:30:10,000000000' WHERE NumEpr ='3';
 --Marche pas
 UPDATE HORAIRES SET DateHeureDebut ='03/05/17 11:30:10,000000000' WHERE NumEpr ='3';
 
 
-DROP TRIGGER VERIFIER_INSER_OCCUPATIONS_C2;
+/* On vérifie ensuite avant un update ou une insertion dans OCCUPATIONS */
+
 CREATE  TRIGGER VERIFIER_INSER_OCCUPATIONS_C2
   AFTER UPDATE OR INSERT ON OCCUPATIONS
   	DECLARE
@@ -282,8 +345,14 @@ INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,5,10);
 --Marche
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,4,10);
 
-/*-------------------------QUESTION 3-------------------------------------------------------*/
-DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
+/******************************************************************************************************************************************************/
+
+/*QUESTION 3*/
+
+/*On cherche a vérifier que le nombre total de places occupé par les épreuves dans une même salle ne dépasse pas la capacité de la salle */ 
+
+/* On vérifie d'abord avant les updates dans la table SALLE */
+
 CREATE TRIGGER  VERIFIER_U_SALLES_CAPACITE                                                                          
   BEFORE UPDATE OF capaciteSal,NumSal ON SALLES  
       FOR EACH ROW
@@ -309,11 +378,14 @@ CREATE TRIGGER  VERIFIER_U_SALLES_CAPACITE
 END;
 
 /* Jeu de test*/
+-- marche
 UPDATE SALLES SET CapaciteSal= '10' WHERE numSal = '1';
+-- Marche pas
 UPDATE SALLES SET CapaciteSal= '0' WHERE numSal = '1';
 
 
-DROP TRIGGER VERIFIER_U_OCC_NBPlACESOCC;
+/* On vérifie ensuite après un update ou une insertion dans occupations */
+
 CREATE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC                                                                         
   AFTER  UPDATE OR INSERT  ON OCCUPATIONS 
         DECLARE
@@ -344,9 +416,14 @@ UPDATE OCCUPATIONS SET NbPlacesOcc= '11' WHERE numEpr = '2' AND NUMSAL = '1';
 UPDATE OCCUPATIONS SET NbPlacesOcc= '3' WHERE numEpr = '2' AND NUMSAL = '1';
 
 
+/******************************************************************************************************************************************************/
 
-/*QUESTION 4 */
-DROP TRIGGER VERIFIER_UI_INSERT_SURVEIL  ;
+/*QUESTION 4*/
+
+/*  On cherche a vérifier qu'un enseignant n'assure une surveillance uniquement dans une salle dans laquelle il y a une épreuve */ 
+
+/* On vérifie d'abord avant la modification ou l'insertion d'une entrée dans SURVEILLANCES */
+
 CREATE TRIGGER VERIFIER_UI_INSERT_SURVEIL                                                                         
   BEFORE UPDATE OR INSERT  ON SURVEILLANCES
     FOR EACH ROW  
@@ -379,7 +456,8 @@ INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (1,'03/05/19 10:
 DELETE FROM SURVEILLANCES WHERE NumEns = 1 AND DateHeureDebut = '03/05/19 10:30:10,000000000';
 INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (1,'03/05/19 10:30:10,000000000',4);
 
-DROP TRIGGER VERIFIER_U_INSERT_HOR;
+/* On vérifie ensuite avant l'update ou l'insert dans HORAIRES */
+
 CREATE TRIGGER VERIFIER_U_INSERT_HOR                                                                        
   BEFORE UPDATE OR INSERT ON HORAIRES
     FOR EACH ROW  
