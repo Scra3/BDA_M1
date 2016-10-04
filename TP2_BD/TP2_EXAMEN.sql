@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 -- Authors : DAVID GUERROUDJ =) , ALBAN BERTOLINI =)
 
+=======
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 /*----------------------------------------------------------------------------
 CREATION DES TABLES
 ------------------------------------------------------------------------------*/
@@ -85,19 +88,25 @@ INSERT INTO SALLES (NumSal,NomSal,CapaciteSal) VALUES (3,'Nunc Sed',3);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (1,'Ankara',INTERVAL '65' MINUTE);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (2,'Hatay',INTERVAL '65' MINUTE);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (3,'North Island',INTERVAL '65' MINUTE);
+<<<<<<< HEAD
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (4,'Sud Island',INTERVAL '65' MINUTE);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (5,'North',INTERVAL '65' MINUTE);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (6,'North jean',INTERVAL '65' MINUTE);
 INSERT INTO EPREUVES (NumEpr,NomEpr,DureeEpr) VALUES (7,'North jean le retour',INTERVAL '65' MINUTE);
 
 
+=======
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 /*INSCRIPTIONS*/
 INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (1,1);
 INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (2,1);
 INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (3,2);
+<<<<<<< HEAD
 INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (1,2);
 INSERT INTO INSCRIPTIONS (NumEtu,NumEpr) VALUES (1,7);
 
+=======
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 /*HORAIRES*/
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (1,'03-05-17 10:30:10');
 INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (2,'03-05-17 10:30:10');
@@ -106,8 +115,11 @@ INSERT INTO HORAIRES (NumEpr,DateHeureDebut) VALUES (3,'27-02-17 10:20:10');
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (1,2,1);
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,1,2);
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (3,2,0);
+<<<<<<< HEAD
 INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,6,1);
 
+=======
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 /*SURVEILLANCES*/
 INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (11,'03-05-17 10:30:10',3);
 INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (4,'03-05-17 10:30:10',2);
@@ -123,11 +135,17 @@ DROP  TABLE INSCRIPTIONS;
 DROP  TABLE SURVEILLANCES;
 DROP  TABLE OCCUPATIONS;
 DROP TABLE HORAIRES;
+<<<<<<< HEAD
 
 /*----------------------------------------------------------------------------
 DROP DES TRIGGERS
 ------------------------------------------------------------------------------*/
 
+=======
+/*----------------------------------------------------------------------------
+DROP DES TRIGGERS
+------------------------------------------------------------------------------*/
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 DROP TRIGGER VERIFIER_EPREUVE_ETUDIANT;
 DROP TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT;
 DROP TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT;
@@ -138,7 +156,10 @@ DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
 DROP TRIGGER VERIFIER_U_OCC_NBPlACESOCC;
 DROP TRIGGER VERIFIER_UI_INSERT_SURVEIL;
 DROP TRIGGER VERIFIER_U_INSERT_HOR;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 /*----------------------------------------------------------------------------
 CREATION DES TRIGGERS
 ------------------------------------------------------------------------------*/
@@ -149,8 +170,14 @@ CREATION DES TRIGGERS
 
 /* On vérifie avant l'insertion d'une entrée dans la table HORAIRES */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_EPREUVE_ETUDIANT
     AFTER INSERT ON HORAIRES 
+=======
+  CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
+    BEFORE INSERT ON HORAIRES 
+      FOR EACH ROW
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
         DECLARE
           N BINARY_INTEGER;
           BEGIN
@@ -184,9 +211,17 @@ INSERT INTO HORAIRES(NumEpr,DateHeureDebut) VALUES(7,'03/05/19 10:32:10,00000000
 
 /* On cherche si un etudiant n'a pas d'autre epreuve avec un creneau en commun sur l'epreuve oe il s'inscrit */
 
+<<<<<<< HEAD
 /* On vérifie avant l'insertion d'une entrée dans la table INSCRIPTIONS */
 
 CREATE OR REPLACE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
+=======
+/* On cherche si un etudiant n'a pas d'autre epreuve avec un creneau en commun sur l'epreuve oe il s'inscrit */
+
+/* On vérifie avant l'insertion d'une entrée dans la table INSCRIPTIONS */
+
+CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   BEFORE INSERT ON INSCRIPTIONS
     FOR EACH ROW
       DECLARE
@@ -228,7 +263,11 @@ INSERT INTO INSCRIPTIONS (NumEpr,NumEtu) VALUES (1,1);
 
 /* On vérifie avant la modification dans la table INSCRITPIONS */ 
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
+=======
+CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   AFTER UPDATE ON INSCRIPTIONS
       DECLARE
         N BINARY_INTEGER;
@@ -263,7 +302,11 @@ UPDATE INSCRIPTIONS SET NumEpr = '1'  WHERE NumEtu = '1' AND NumEpr ='3';
 
 /*On verifie sur la modification d' epreuve ( Uniquement sur la modification car les contraintes de clefs se chargent du reste ) */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_UPDATE_EPREUVES
+=======
+CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   AFTER UPDATE OF DureeEpr ON EPREUVES
       DECLARE
          N BINARY_INTEGER;
@@ -302,7 +345,11 @@ UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South Wal
 
 /* On commence par vérifier avant un update dans HORAIRES */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_INSER_HORAIRE_C2
+=======
+CREATE  TRIGGER VERIFIER_INSER_HORAIRE_C2
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   AFTER UPDATE ON HORAIRES
   	DECLARE
     	N BINARY_INTEGER;
@@ -336,7 +383,11 @@ UPDATE HORAIRES SET DateHeureDebut ='03/05/17 11:30:10,000000000' WHERE NumEpr =
 
 /* On vérifie ensuite avant un update ou une insertion dans OCCUPATIONS */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_INSER_OCCUPATIONS_C2
+=======
+CREATE  TRIGGER VERIFIER_INSER_OCCUPATIONS_C2
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   AFTER UPDATE OR INSERT ON OCCUPATIONS
   	DECLARE
     	N BINARY_INTEGER;
@@ -376,7 +427,11 @@ INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,4,10);
 
 /* On vérifie d'abord avant les updates dans la table SALLE */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER  VERIFIER_U_SALLES_CAPACITE                                                                          
+=======
+CREATE TRIGGER  VERIFIER_U_SALLES_CAPACITE                                                                          
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   BEFORE UPDATE OF capaciteSal,NumSal ON SALLES  
       FOR EACH ROW
         DECLARE
@@ -402,14 +457,22 @@ END;
 
 /* Jeu de test*/
 -- marche
+<<<<<<< HEAD
 UPDATE SALLES SET CapaciteSal= '100' WHERE numSal = '1';
+=======
+UPDATE SALLES SET CapaciteSal= '10' WHERE numSal = '1';
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
 -- Marche pas
 UPDATE SALLES SET CapaciteSal= '0' WHERE numSal = '1';
 
 
 /* On vérifie ensuite après un update ou une insertion dans occupations */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC                                                                         
+=======
+CREATE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC                                                                         
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   AFTER  UPDATE OR INSERT  ON OCCUPATIONS 
         DECLARE
            N BINARY_INTEGER;
@@ -442,12 +505,21 @@ UPDATE OCCUPATIONS SET NbPlacesOcc= '3' WHERE numEpr = '2' AND NUMSAL = '1';
 /******************************************************************************************************************************************************/
 
 /*QUESTION 4*/
+<<<<<<< HEAD
 
 /*  On cherche a vérifier qu'un enseignant n'assure une surveillance uniquement dans une salle dans laquelle il y a une épreuve */ 
 
 /* On vérifie d'abord avant la modification ou l'insertion d'une entrée dans SURVEILLANCES */
 
 CREATE OR REPLACE TRIGGER VERIFIER_UI_INSERT_SURVEIL                                                                         
+=======
+
+/*  On cherche a vérifier qu'un enseignant n'assure une surveillance uniquement dans une salle dans laquelle il y a une épreuve */ 
+
+/* On vérifie d'abord avant la modification ou l'insertion d'une entrée dans SURVEILLANCES */
+
+CREATE TRIGGER VERIFIER_UI_INSERT_SURVEIL                                                                         
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   BEFORE UPDATE OR INSERT  ON SURVEILLANCES
     FOR EACH ROW  
         DECLARE
@@ -481,7 +553,11 @@ INSERT INTO SURVEILLANCES (NumEns,DateHeureDebut,NumSal) VALUES (1,'03/05/19 10:
 
 /* On vérifie ensuite avant l'update ou l'insert dans HORAIRES */
 
+<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER VERIFIER_U_INSERT_HOR                                                                        
+=======
+CREATE TRIGGER VERIFIER_U_INSERT_HOR                                                                        
+>>>>>>> 1003bc86e6486f2f15b549ab6d41df1d987f82a6
   BEFORE UPDATE OR INSERT ON HORAIRES
     FOR EACH ROW  
         DECLARE
