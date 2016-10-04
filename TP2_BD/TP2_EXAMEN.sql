@@ -218,28 +218,69 @@ UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South Wal
 /* QUESTION 2 */
 DROP TRIGGER VERIFIER_INSER_HORAIRE_C2;
 CREATE  TRIGGER VERIFIER_INSER_HORAIRE_C2
-  BEFORE UPDATE ON HORAIRES
-   FOR EACH ROW  
+  AFTER UPDATE ON HORAIRES
   	DECLARE
     	N BINARY_INTEGER;
     	BEGIN
-   		 SELECT 1 INTO N
-   		 FROM EPREUVES E, HORAIRES H, OCCUPATIONS O, SALLES S
-   		 WHERE H.NumEpr = E.NumEpr AND
-   			   E.NumEpr = O.NumEpr AND
-   			   O.NumSal = S.NumSal AND
-          H.DateHeureDebut = : NEW.DateHeureDebut;
+      
+   		   SELECT 1 INTO N 
+        FROM EPREUVES E1, EPREUVES E2, HORAIRES H1,HORAIRES H2, OCCUPATIONS O1 , OCCUPATIONS O2
+        WHERE H1.NumEpr = E1.NumEpr AND
+              E1.NumEpr = O1.NumEpr AND
+              H1.NumEpr = O1.NumEpr AND
+              H2.NumEpr = E2.NumEpr AND
+              E2.NumEpr = O2.NumEpr AND
+              H2.NumEpr = O2.NumEpr AND
+              E1.NumEpr < E2.NumEpr AND
+              (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut + E2.DureeEpr) AND
+              H1.DateHeureDebut <> H2.DateHeureDebut;
+          
    		 RAISE too_many_rows;
 
    	 EXCEPTION
    		 WHEN no_data_found THEN NULL;
-   		 WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-21000,'L epreuve doit commencer en meme temps que les autres epreuves de la salle !!');
-    END;
+   		 WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20899,'L epreuve doit commencer en meme temps que les autres epreuves de la salle !!');
+END;
 
 /*Jeux de test*/
 --marche
 UPDATE HORAIRES SET DateHeureDebut ='03/05/17 10:30:10,000000000' WHERE NumEpr ='3';
 --Marche pas
+UPDATE HORAIRES SET DateHeureDebut ='03/05/17 11:30:10,000000000' WHERE NumEpr ='3';
+
+
+DROP TRIGGER VERIFIER_INSER_OCCUPATIONS_C2;
+CREATE  TRIGGER VERIFIER_INSER_OCCUPATIONS_C2
+  AFTER UPDATE OR INSERT ON OCCUPATIONS
+  	DECLARE
+    	N BINARY_INTEGER;
+    	BEGIN
+      
+   		    SELECT 1 INTO N 
+        FROM EPREUVES E1, EPREUVES E2, HORAIRES H1,HORAIRES H2, OCCUPATIONS O1 , OCCUPATIONS O2
+        WHERE H1.NumEpr = E1.NumEpr AND
+              E1.NumEpr = O1.NumEpr AND
+              H1.NumEpr = O1.NumEpr AND
+              H2.NumEpr = E2.NumEpr AND
+              E2.NumEpr = O2.NumEpr AND
+              H2.NumEpr = O2.NumEpr AND
+              E1.NumEpr < E2.NumEpr AND
+              (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut + E2.DureeEpr) AND
+              H1.DateHeureDebut <> H2.DateHeureDebut;
+          
+          
+   		 RAISE too_many_rows;
+
+   	 EXCEPTION
+   		 WHEN no_data_found THEN NULL;
+   		 WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20899,'L epreuve doit commencer en meme temps que les autres epreuves de la salle !!');
+END;
+
+/*Jeux de test*/
+--Ne marche pas
+INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,5,10);
+--Marche
+INSERT INTO OCCUPATIONS (NumSal,NumEpr,NbPlacesOcc) VALUES (2,4,10);
 
 /*-------------------------QUESTION 3-------------------------------------------------------*/
 DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
