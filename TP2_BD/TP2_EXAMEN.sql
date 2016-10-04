@@ -81,30 +81,27 @@ CREATION DES TRIGGERS
 /*QUESTION 1*/
 /*On cherche si deux �preuves ont des �tudiant en commun et que les horaires soit bien distinctes */
 DROP TRIGGER VERIFIER_EPREUVE_ETUDIANT;
-CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
-  BEFORE INSERT ON HORAIRES 
-    FOR EACH ROW
-      DECLARE
-        N BINARY_INTEGER;
-        DureeEpr INTERVAL DAY TO SECOND(0);
-      BEGIN
-        SELECT DureeEpr INTO DureeEpr
-        FROM EPREUVES E
-        WHERE E.NumEpr = : NEW.NumEpr;
-        
-        SELECT 1 INTO N 
-        FROM HORAIRES H,INSCRIPTIONS I ,EPREUVES E
-        WHERE H.NumEpr = E.NumEpr AND
-              E.NumEpr = I.NumEpr AND
-              H.NumEpr = I.NumEpr AND
-              (H.DateHeureDebut,H.DateHeureDebut + E.DureeEpr) OVERLAPS (: NEW.DateHeureDebut,: NEW.DateHeureDebut + DureeEpr);
-              /*Si on arrive a cette ligne erreur*/
-        RAISE too_many_rows;
-        EXCEPTION 
-        WHEN no_data_found THEN NULL;
-        WHEN too_many_rows  THEN RAISE_APPLICATION_ERROR(-20230,'Des �tudiants sont d�ja en �preuve');
-END;
-\
+  CREATE TRIGGER VERIFIER_EPREUVE_ETUDIANT
+    BEFORE INSERT ON HORAIRES 
+      FOR EACH ROW
+        DECLARE
+          N BINARY_INTEGER;
+          
+          BEGIN
+          SELECT 1 INTO N 
+          FROM HORAIRES H,INSCRIPTIONS I ,EPREUVES E
+          WHERE H.NumEpr = E.NumEpr AND
+                E.NumEpr = I.NumEpr AND
+                H.NumEpr = I.NumEpr AND
+                E.NumEpr = : NEW.NumEpr AND
+                (H.DateHeureDebut, H.DateHeureDebut + E.DureeEpr) OVERLAPS ( : NEW.DateHeureDebut, : NEW.DateHeureDebut + DureeEpr);
+
+          RAISE too_many_rows;
+          EXCEPTION 
+          WHEN no_data_found THEN NULL;
+          WHEN too_many_rows  THEN RAISE_APPLICATION_ERROR(-20245,'Des étudiants sont déja en épreuve');
+  END;
+
 
 /*Jeux de test*/
 
@@ -142,6 +139,7 @@ CREATE TRIGGER VERIFIER_INSCRIPTIONS_ETUDIANT
           WHEN no_data_found THEN NULL;
           WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est d�ja dans une �preuve');
 END;
+
 \
 /*Jeux de test*/
 --Marche
@@ -153,7 +151,7 @@ INSERT INTO INSCRIPTIONS (NumEpr,NumEtu) VALUES (1,1);
 
 DROP TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT;
 CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
-  BEFORE UPDATE ON INSCRIPTIONS
+  AFTER UPDATE ON INSCRIPTIONS
       DECLARE
         N BINARY_INTEGER;
         BEGIN
@@ -167,7 +165,7 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
               E2.NumEpr = I2.NumEpr AND
               H2.NumEpr = I2.NumEpr AND
               I1.NumEtu = I2.NumEtu AND
-              E1.NumEpr E2.NumEpr
+              E1.NumEpr < E2.NumEpr AND
               (H1.DateHeureDebut,H1.DateHeureDebut + E1.DureeEpr) OVERLAPS (H2.DateHeureDebut,H2.DateHeureDebut + E2.DureeEpr);
 
         RAISE too_many_rows;
@@ -176,15 +174,19 @@ CREATE TRIGGER VERIFIER_INSCRIP_DIF_ETUDIANT
           WHEN no_data_found THEN NULL;
           WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-20231,'l etudiant est d�ja dans une �preuve');
 END;
-UPDATE INSCRIPTIONS SET NumEpr = '1'  WHERE NumEtu = '1' AND NumEpr = '2';
-UPDATE INSCRIPTIONS SET NumEpr = '4'  WHERE NumEtu = '1' AND NumEpr = '1';
+
+/*Jeux de test*/
+--Marche
+UPDATE INSCRIPTIONS SET NumEpr = '2'  WHERE NumEtu = '1' AND NumEpr IN(4,2,3);
+--Ne marche pas
+UPDATE INSCRIPTIONS SET NumEpr = '1'  WHERE NumEtu = '1' AND NumEpr ='3';
 
 /*----------------------------------------------*/
 /*On v�rifie sur la modification d' epreuve ( Uniquement sur la modification car les contraintes de clefs se charge du reste ) */
 
 DROP TRIGGER VERIFIER_UPDATE_EPREUVES;
 CREATE TRIGGER VERIFIER_UPDATE_EPREUVES
-  BEFORE UPDATE OF DureeEpr ON EPREUVES
+  AFTER UPDATE OF DureeEpr ON EPREUVES
       DECLARE
          N BINARY_INTEGER;
         BEGIN
@@ -214,28 +216,31 @@ UPDATE EPREUVES SET DureeEpr = INTERVAL '10' MINUTE WHERE NomEpr ='New South Wal
 
 
 /* QUESTION 2 */
+DROP TRIGGER VERIFIER_INSER_HORAIRE_C2;
+CREATE  TRIGGER VERIFIER_INSER_HORAIRE_C2
+  BEFORE UPDATE ON HORAIRES
+   FOR EACH ROW  
+  	DECLARE
+    	N BINARY_INTEGER;
+    	BEGIN
+   		 SELECT 1 INTO N
+   		 FROM EPREUVES E, HORAIRES H, OCCUPATIONS O, SALLES S
+   		 WHERE H.NumEpr = E.NumEpr AND
+   			   E.NumEpr = O.NumEpr AND
+   			   O.NumSal = S.NumSal AND
+          H.DateHeureDebut = : NEW.DateHeureDebut;
+   		 RAISE too_many_rows;
 
+   	 EXCEPTION
+   		 WHEN no_data_found THEN NULL;
+   		 WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-21000,'L epreuve doit commencer en meme temps que les autres epreuves de la salle !!');
+    END;
 
-DROP TRIGGER VERIFIER_EP_EPREUVES;
-CREATE TRIGGER VERIFIER_EP_EPREUVES
-  BEFORE UPDATE OF DureeEpr ON EPREUVES
-      DECLARE
-         N BINARY_INTEGER;
-        BEGIN
-        
-        SELECT 1 INTO N 
-        FROM EPREUVES E , HORAIRES H
-        WHERE H.NumEpr = E.NumEpr AND
-              E.NumEpr = I.NumEpr AND
-              H.NumEpr = I.NumEpr AND
-              
-            
-        RAISE too_many_rows;
+/*Jeux de test*/
+--marche
+UPDATE HORAIRES SET DateHeureDebut ='03/05/17 10:30:10,000000000' WHERE NumEpr ='3';
+--Marche pas
 
-        EXCEPTION
-          WHEN no_data_found THEN NULL;
-          WHEN too_many_rows THEN RAISE_APPLICATION_ERROR(-10,'l etudiant est d�ja dans une �preuve');
-END;
 /*-------------------------QUESTION 3-------------------------------------------------------*/
 DROP TRIGGER VERIFIER_U_SALLES_CAPACITE;
 CREATE TRIGGER  VERIFIER_U_SALLES_CAPACITE                                                                          
@@ -269,7 +274,7 @@ UPDATE SALLES SET CapaciteSal= '0' WHERE numSal = '1';
 
 DROP TRIGGER VERIFIER_U_OCC_NBPlACESOCC;
 CREATE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC                                                                         
-  BEFORE UPDATE OR INSERT  ON OCCUPATIONS 
+  AFTER  UPDATE OR INSERT  ON OCCUPATIONS 
         DECLARE
            N BINARY_INTEGER;
           BEGIN
@@ -292,7 +297,9 @@ CREATE TRIGGER  VERIFIER_U_OCC_NBPlACESOCC
 END;
 
 /* Jeu de test*/
+--Ne marche pas 
 UPDATE OCCUPATIONS SET NbPlacesOcc= '11' WHERE numEpr = '2' AND NUMSAL = '1';
+--Marche
 UPDATE OCCUPATIONS SET NbPlacesOcc= '3' WHERE numEpr = '2' AND NUMSAL = '1';
 
 
